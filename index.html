@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday 22 Tahun Bubub</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ============================================================
+       SECTION 1 — HERO
+  ============================================================ -->
+    <section id="hero" aria-label="Ucapan ulang tahun utama">
+
+        <!-- Canvas confetti di belakang -->
+        <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+        <!-- Balon melayang -->
+        <div class="balloons-container" aria-hidden="true">
+            <div class="balloon"></div>
+            <div class="balloon"></div>
+            <div class="balloon"></div>
+            <div class="balloon"></div>
+            <div class="balloon"></div>
+            <div class="balloon"></div>
+            <div class="balloon"></div>
+            <div class="balloon"></div>
+            <div class="balloon"></div>
+            <div class="balloon"></div>
+        </div>
+
+        <!-- Konten hero -->
+        <div class="hero-content">
+            <!-- Angka umur — diisi oleh JS -->
+            <div class="hero-age" id="hero-age" aria-label="Umur 22 tahun">22</div>
+
+            <!-- Subtitle -->
+            <h1 class="hero-subtitle">Happy Birthday</h1>
+
+            <!-- Rentang tanggal -->
+            <p class="hero-dates">6 April 2004 &rarr; 6 April 2026</p>
+
+            <!-- Lilin animasi -->
+            <div class="candle-wrapper" aria-hidden="true">
+                <div class="candle">
+                    <div class="candle-flame"></div>
+                    <div class="candle-body"></div>
+                    <div class="candle-base"></div>
+                </div>
+                <div class="candle" style="transform:scale(0.8);opacity:0.8;">
+                    <div class="candle-flame" style="animation-delay:0.15s"></div>
+                    <div class="candle-body"></div>
+                    <div class="candle-base"></div>
+                </div>
+                <div class="candle" style="transform:scale(1.1);">
+                    <div class="candle-flame" style="animation-delay:0.35s"></div>
+                    <div class="candle-body"></div>
+                    <div class="candle-base"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll hint -->
+        <div class="scroll-hint" aria-hidden="true">
+            <span>↓</span>
+            <small>scroll</small>
+        </div>
+
+    </section>
+
+
+    <!-- ============================================================
+       SECTION 2 — PERSONALIZED MESSAGE CARD
+  ============================================================ -->
+    <section id="message" aria-label="Kartu pesan ulang tahun">
+        <div class="container">
+
+            <div class="reveal">
+                <span class="section-label">✦ Happy Birthday Bubub</span>
+                <h2 class="section-title">Pesan Dari Dhani Nih</h2>
+            </div>
+
+            <div class="glass-card reveal" style="transition-delay:0.1s">
+
+                <!-- Input nama -->
+                <div class="name-input-group">
+                    <label for="name-input">Untuk My Beautiful Girl:</label>
+                    <input type="text" id="name-input" class="name-input" placeholder="Mutiah Ulfa" maxlength="40"
+                        autocomplete="off" aria-label="Nama penerima ucapan">
+                </div>
+
+                <!-- Divider dekoratif -->
+                <div class="divider" aria-hidden="true">
+                    <span class="divider-icon">♥</span>
+                </div>
+
+                <!-- Pesan ulang tahun dalam Bahasa Indonesia -->
+                <div class="birthday-message" role="article">
+                    <p>
+                        Selamat ulang tahun, <span class="recipient-name">Sayang</span>! 🎉
+                        Hari ini, 6 April 2026, adalah hari istimewa buat ayang, selamat karena udah hidup selama
+                        <span class="age-highlight">22 tahun</span> sebuah angka yang menyimpan
+                        sangat banyak kisah, tawa, air mata, dan pelajaran berharga yang telah
+                        membentuk mutiah menjadi pribadi yang luar biasa kayak sekarang.
+                    </p>
+                    <p>
+                        Di usia <span class="age-highlight">22</span> artinya bubub udah melewati banyak hal baik suka
+                        maupun duka, dhani bangga sama mutiah karena
+                        udah tumbuh menjadi wanita yang kuat, penuh kasih, dan selalu tersenyummm.
+                        <span class="recipient-name">Semoga</span>
+                        Setiap mimpi yang ayang impikan, setiap keberanian yang ayang tunjukkan,
+                        dan setiap cinta yang ayang berikan sama orang-orang di sekitar ayang baik itu keluarga,
+                        sahabat, atau siapapun yang beruntung kenal sama ayang,
+                        semuanya adalah bukti betapa indahnya perjalanan hidup ayang selama ini. dan semoga semua yang
+                        diimpikan ditahun ini semuanya bisa terwujud aamiin. pesan <span
+                            class="recipient-name">Dhani</span>
+                        Jangan pernah berhenti untuk percaya sama diri sendiri ya, dan sama dhani jga tentunya ahahaha.
+                    </p>
+                    <p>
+                        Semoga di ulang tahun ke-<span class="age-highlight">22</span> ini, langkah ayang
+                        semakin dipermudah, lebih sabar lagi jangan suka marah, dan yang paling utama semoga ayang
+                        bahagia selalu dan mudah tersenyum.
+                        Dunia ini beruntung memiliki wanita kayak <span class="recipient-name">Mutiah</span>.
+                        Selamat ulang tahun <span class="age-highlight">cintaku</span>.
+                        Dengan penuh cinta dan doa terbaik <em>happy birthday!</em> 🌟
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================================
+       SECTION 3 — LIFE STATS COUNTER
+  ============================================================ -->
+    <section id="stats" aria-label="Statistik kehidupan">
+        <div class="container">
+
+            <div class="reveal">
+                <span class="section-label">✦ Perjalanan Hidup Bubub</span>
+                <h2 class="section-title">Angka-Angka Istimewa</h2>
+            </div>
+
+            <!-- 4 stat cards -->
+            <div class="stats-grid reveal" style="transition-delay:0.15s" aria-label="Ringkasan statistik hidup">
+                <div class="stat-card" role="figure" aria-labelledby="label-years">
+                    <span class="stat-number" id="stat-years" aria-live="polite">0</span>
+                    <span class="stat-label" id="label-years">Tahun</span>
+                </div>
+                <div class="stat-card" role="figure" aria-labelledby="label-months">
+                    <span class="stat-number" id="stat-months" aria-live="polite">0</span>
+                    <span class="stat-label" id="label-months">Bulan</span>
+                </div>
+                <div class="stat-card" role="figure" aria-labelledby="label-days">
+                    <span class="stat-number" id="stat-days" aria-live="polite">0</span>
+                    <span class="stat-label" id="label-days">Hari</span>
+                </div>
+                <div class="stat-card" role="figure" aria-labelledby="label-hours">
+                    <span class="stat-number" id="stat-hours" aria-live="polite">0</span>
+                    <span class="stat-label" id="label-hours">Jam</span>
+                </div>
+            </div>
+
+            <!-- Inspirational quote -->
+            <blockquote class="quote-card reveal" style="transition-delay:0.3s">
+                <p class="quote-text">
+                    "Dua puluh dua adalah titik di mana hidup mulai terasa berbeda.
+                    Bukan lagi tentang mudah atau tidaknya menjalani hari,
+                    tapi tentang bagaimana Mutiah belajar bertahan di tengah
+                    banyaknya tantangan yang datang tanpa peringatan.
+
+                    Akan ada hari-hari yang melelahkan, keputusan yang membingungkan,
+                    dan masalah yang mungkin terasa lebih berat dari sebelumnya.
+                    Tapi di situlah Mutiah sedang dibentuk menjadi pribadi lebih kuat,
+                    lebih bijak, dan lebih siap menghadapi dunia yang sebenarnya.
+
+                    Semoga Ayang selalu diberikan kekuatan untuk melewati semuanya
+                    dengan cara yang benar, tanpa kehilangan arah, tanpa kehilangan kepercayaan diri.
+                    Dan di setiap langkah itu, dalam setiap jatuh dan bangkit Mutiah,
+                    akan selalu ada Dhani di sini menemani, mendukung."
+                </p>
+                <cite class="quote-author">— Seseorang yang selalu ada untukmu</cite>
+            </blockquote>
+
+        </div>
+    </section>
+
+
+    <!-- ============================================================
+       SECTION 4 — MUSIC TOGGLE BUTTON (FIXED)
+  ============================================================ -->
+    <button id="music-btn" aria-label="Putar musik ulang tahun" title="Putar / Hentikan Musik">
+        <span class="music-icon">🎵</span>
+    </button>
+
+
+    <!-- ============================================================
+       SECTION 5 — FOOTER
+  ============================================================ -->
+    <footer id="footer" role="contentinfo">
+        <div class="container">
+            <span class="footer-cake" aria-hidden="true">🎂</span>
+            <p class="footer-message">Semoga hari ini dan seterusnya selalu ada Dhani disetiap Ulang Tahunnya Ya</p>
+            <p class="footer-sub">6 April 2004 — 6 April 2026 · 22 Tahun Bububbb</p>
+            <p class="footer-credit">
+                Made with <span class="heart" aria-label="cinta">❤️</span> by your boyfriend
+            </p>
+        </div>
+    </footer>
+
+
+    <!-- JavaScript -->
+    <script src="main.js"></script>
+
+</body>
+
+</html>
