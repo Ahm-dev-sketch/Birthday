@@ -27,7 +27,9 @@ const getPerformanceProfile = () => {
             confettiFrameStep: 3,
             sparkleCount: 10,
             petalCount: 5,
-            enableCursorHearts: false,
+            enableCursorHearts: true,
+            heartInterval: 180,
+            touchHeartBurst: 1,
             keepBalloonRespawn: false
         };
     }
@@ -39,7 +41,9 @@ const getPerformanceProfile = () => {
             confettiFrameStep: 2,
             sparkleCount: 20,
             petalCount: 9,
-            enableCursorHearts: false,
+            enableCursorHearts: true,
+            heartInterval: 130,
+            touchHeartBurst: 2,
             keepBalloonRespawn: true
         };
     }
@@ -51,6 +55,8 @@ const getPerformanceProfile = () => {
         sparkleCount: 36,
         petalCount: 16,
         enableCursorHearts: true,
+        heartInterval: 90,
+        touchHeartBurst: 2,
         keepBalloonRespawn: true
     };
 };
@@ -237,6 +243,7 @@ const initCursorHearts = () => {
     if (!PERF.enableCursorHearts) return;
 
     let last = 0;
+    const heartInterval = PERF.heartInterval || 90;
 
     const spawnHeart = (x, y) => {
         const heart = document.createElement('span');
@@ -249,12 +256,57 @@ const initCursorHearts = () => {
         setTimeout(() => heart.remove(), 820);
     };
 
-    window.addEventListener('pointermove', (event) => {
+    const spawnWithThrottle = (x, y, force = false) => {
         const now = performance.now();
-        if (now - last < 90) return;
+        if (!force && now - last < heartInterval) return;
         last = now;
-        spawnHeart(event.clientX, event.clientY);
+        spawnHeart(x, y);
+    };
+
+    const spawnTouchBurst = (x, y) => {
+        const count = PERF.touchHeartBurst || 1;
+        for (let i = 0; i < count; i++) {
+            const offsetX = (Math.random() - 0.5) * 24;
+            const offsetY = (Math.random() - 0.5) * 18;
+            spawnHeart(x + offsetX, y + offsetY);
+        }
+        last = performance.now();
+    };
+
+    if (window.PointerEvent) {
+        window.addEventListener('pointermove', (event) => {
+            if (event.pointerType && event.pointerType !== 'mouse') return;
+            spawnWithThrottle(event.clientX, event.clientY);
+        });
+
+        window.addEventListener('pointerdown', (event) => {
+            if (!event.pointerType || event.pointerType === 'mouse') return;
+            spawnTouchBurst(event.clientX, event.clientY);
+        });
+
+        window.addEventListener('pointermove', (event) => {
+            if (!event.pointerType || event.pointerType === 'mouse') return;
+            spawnWithThrottle(event.clientX, event.clientY);
+        });
+        return;
+    }
+
+    // Fallback untuk browser touch lama yang belum mendukung PointerEvent.
+    window.addEventListener('mousemove', (event) => {
+        spawnWithThrottle(event.clientX, event.clientY);
     });
+
+    window.addEventListener('touchstart', (event) => {
+        const touch = event.touches[0];
+        if (!touch) return;
+        spawnTouchBurst(touch.clientX, touch.clientY);
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (event) => {
+        const touch = event.touches[0];
+        if (!touch) return;
+        spawnWithThrottle(touch.clientX, touch.clientY);
+    }, { passive: true });
 };
 
 /* ----------------------------------------------------------
