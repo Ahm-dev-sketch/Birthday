@@ -403,6 +403,116 @@ const initAudio = () => {
 };
 
 /* ----------------------------------------------------------
+   BALLOON POP — Klik balon untuk efek pecah
+   ---------------------------------------------------------- */
+const initBalloonPop = () => {
+    const hero = document.getElementById('hero');
+    const container = hero?.querySelector('.balloons-container');
+    const balloons = container?.querySelectorAll('.balloon');
+    if (!hero || !container || !balloons.length) return;
+
+    let popAudioCtx = null;
+
+    const playPopSound = () => {
+        if (!popAudioCtx) {
+            popAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (popAudioCtx.state === 'suspended') popAudioCtx.resume();
+
+        const now = popAudioCtx.currentTime;
+        const osc = popAudioCtx.createOscillator();
+        const gain = popAudioCtx.createGain();
+        const filter = popAudioCtx.createBiquadFilter();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(260, now);
+        osc.frequency.exponentialRampToValueAtTime(90, now + 0.08);
+
+        filter.type = 'highpass';
+        filter.frequency.setValueAtTime(180, now);
+
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.linearRampToValueAtTime(0.15, now + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(popAudioCtx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.11);
+    };
+
+    const randomBalloonStyle = (el) => {
+        const palette = ['#FFB6C8', '#FF85A1', '#F2C4D8', '#FFD6E0', '#E8437A', '#E8A0B4'];
+        el.style.setProperty('--col', palette[Math.floor(Math.random() * palette.length)]);
+        el.style.left = `${Math.floor(Math.random() * 90) + 5}%`;
+        el.style.setProperty('--dur', `${Math.floor(Math.random() * 9) + 8}s`);
+        el.style.setProperty('--delay', `${(Math.random() * 1.2).toFixed(2)}s`);
+        el.style.setProperty('--drift', `${Math.floor(Math.random() * 61) - 30}px`);
+    };
+
+    const spawnBalloon = () => {
+        const newBalloon = document.createElement('div');
+        newBalloon.className = 'balloon';
+        randomBalloonStyle(newBalloon);
+        container.appendChild(newBalloon);
+        bindPop(newBalloon);
+    };
+
+    const makeBurst = (x, y, color) => {
+        const burst = document.createElement('div');
+        burst.className = 'balloon-burst';
+        burst.style.left = `${x}px`;
+        burst.style.top = `${y}px`;
+
+        for (let i = 0; i < 12; i++) {
+            const frag = document.createElement('span');
+            const angle = (Math.PI * 2 * i) / 12 + (Math.random() - 0.5) * 0.4;
+            const dist = 16 + Math.random() * 28;
+            const dx = Math.cos(angle) * dist;
+            const dy = Math.sin(angle) * dist;
+
+            frag.className = 'balloon-fragment';
+            frag.style.background = color;
+            frag.style.setProperty('--dx', `${dx}px`);
+            frag.style.setProperty('--dy', `${dy}px`);
+            frag.style.setProperty('--rot', `${(Math.random() - 0.5) * 360}deg`);
+            frag.style.animationDelay = `${Math.random() * 0.06}s`;
+            burst.appendChild(frag);
+        }
+
+        hero.appendChild(burst);
+        setTimeout(() => burst.remove(), 650);
+    };
+
+    const bindPop = (balloon) => {
+        balloon.addEventListener('click', () => {
+            if (balloon.classList.contains('popped')) return;
+
+            const rect = balloon.getBoundingClientRect();
+            const heroRect = hero.getBoundingClientRect();
+            const centerX = rect.left - heroRect.left + rect.width / 2;
+            const centerY = rect.top - heroRect.top + rect.height / 2;
+            const color = getComputedStyle(balloon).backgroundColor;
+
+            balloon.classList.add('popped');
+            playPopSound();
+            makeBurst(centerX, centerY, color);
+
+            setTimeout(() => {
+                balloon.remove();
+            }, 220);
+
+            // Spawn balon baru setelah jeda pendek agar suasana tetap ramai.
+            setTimeout(spawnBalloon, 700 + Math.random() * 900);
+        });
+    };
+
+    balloons.forEach(bindPop);
+};
+
+/* ----------------------------------------------------------
    SCROLL REVEAL — IntersectionObserver untuk semua section
    ---------------------------------------------------------- */
 const initScrollReveal = () => {
@@ -425,6 +535,7 @@ const initScrollReveal = () => {
 document.addEventListener('DOMContentLoaded', () => {
     renderAge();
     initConfetti();
+    initBalloonPop();
     initMessage();
     initStats();
     initWishWall();

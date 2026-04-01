@@ -254,6 +254,36 @@ section {
     border-radius: 50% 50% 50% 50% / 55% 55% 45% 45%;
     will-change: transform;
     animation: floatBalloon var(--dur) var(--delay) ease-in-out infinite;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.balloon.popped {
+    animation: none;
+    transform: scale(1.2);
+    opacity: 0;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.balloon-burst {
+    position: absolute;
+    pointer-events: none;
+    width: 1px;
+    height: 1px;
+    z-index: 3;
+}
+
+.balloon-fragment {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    opacity: 0.95;
+    transform: translate(0, 0) scale(1);
+    will-change: transform, opacity;
+    animation: burstFragment 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 .balloon::before {
@@ -978,6 +1008,18 @@ section {
 
     100% {
         transform: translateY(-110vh) translateX(0);
+    }
+}
+
+@keyframes burstFragment {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.95;
+    }
+
+    100% {
+        transform: translate(var(--dx), var(--dy)) rotate(var(--rot));
+        opacity: 0;
     }
 }
 
