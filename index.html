@@ -27,6 +27,10 @@
         <!-- Canvas confetti di belakang -->
         <canvas id="confetti-canvas" aria-hidden="true"></canvas>
 
+        <!-- Sparkle dan kelopak bunga -->
+        <div id="sparkle-layer" aria-hidden="true"></div>
+        <div id="petal-layer" aria-hidden="true"></div>
+
         <!-- Balon melayang -->
         <div class="balloons-container" aria-hidden="true">
             <div class="balloon"></div>
@@ -70,6 +74,11 @@
                     <div class="candle-base"></div>
                 </div>
             </div>
+
+            <button id="open-reveal" class="secret-reveal-btn" type="button"
+                aria-label="Buka pesan rahasia untuk ayang">
+                Buka Pesan Rahasia
+            </button>
         </div>
 
         <!-- Scroll hint -->
@@ -106,6 +115,12 @@
                     <span class="divider-icon">♥</span>
                 </div>
 
+                <!-- Typing message romantis -->
+                <div class="love-note-box">
+                    <small class="love-note-label">Special message</small>
+                    <p id="typing-note" class="typing-note" aria-live="polite"></p>
+                </div>
+
                 <!-- Pesan ulang tahun dalam Bahasa Indonesia -->
                 <div class="birthday-message" role="article">
                     <p>
@@ -138,6 +153,40 @@
                     </p>
                 </div>
 
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================================
+       SECTION 4 — MEMORY SLIDESHOW
+  ============================================================ -->
+    <section id="memories" aria-label="Slideshow kenangan">
+        <div class="container">
+            <div class="reveal">
+                <span class="section-label">✦ Our Moments</span>
+                <h2 class="section-title">Setiap Foto, Cerita Kita</h2>
+            </div>
+
+            <div class="memory-slideshow reveal reveal-delay-memory">
+                <article class="memory-slide active" data-caption="First chapter of us">
+                    <div class="memory-visual memory-visual-1" data-photo="photos/moment-1.jpg"></div>
+                    <p class="memory-caption">Semhas Bareng Nih wkwkwkwkw.</p>
+                </article>
+                <article class="memory-slide" data-caption="You and your soft smile">
+                    <div class="memory-visual memory-visual-2" data-photo="photos/moment-2.jpg"></div>
+                    <p class="memory-caption">Rayain Ulang Tahun Dhani ahahahaha.</p>
+                </article>
+                <article class="memory-slide" data-caption="And many dreams ahead">
+                    <div class="memory-visual memory-visual-3" data-photo="photos/moment-3.jpg"></div>
+                    <p class="memory-caption">Genetate AI ini ya wkwkwkw.</p>
+                </article>
+
+                <div class="memory-dots" aria-label="Navigasi slideshow" role="tablist">
+                    <button class="memory-dot active" type="button" aria-label="Slide 1" role="tab"></button>
+                    <button class="memory-dot" type="button" aria-label="Slide 2" role="tab"></button>
+                    <button class="memory-dot" type="button" aria-label="Slide 3" role="tab"></button>
+                </div>
             </div>
         </div>
     </section>
@@ -200,7 +249,7 @@
 
 
     <!-- ============================================================
-       SECTION 4 — MUSIC TOGGLE BUTTON (FIXED)
+       SECTION 5 — MUSIC TOGGLE BUTTON (FIXED)
   ============================================================ -->
     <button id="music-btn" aria-label="Putar musik ulang tahun" title="Putar / Hentikan Musik">
         <span class="music-icon">🎵</span>
@@ -208,18 +257,42 @@
 
 
     <!-- ============================================================
-       SECTION 5 — FOOTER
+         SECTION 6 — FOOTER
   ============================================================ -->
     <footer id="footer" role="contentinfo">
         <div class="container">
+            <div class="footer-glow" aria-hidden="true"></div>
             <span class="footer-cake" aria-hidden="true">🎂</span>
-            <p class="footer-message">Semoga hari ini dan seterusnya selalu ada Dhani disetiap Ulang Tahunnya Ya</p>
-            <p class="footer-sub">6 April 2004 — 6 April 2026 · 22 Tahun Bububbb</p>
+            <p class="footer-kicker">Untuk Cinta Terbaikku</p>
+            <p class="footer-message">Semoga hari ini dan seterusnya selalu ada Dhani di setiap ulang tahun Ayang.</p>
+            <p class="footer-sub">6 April 2004 — 6 April 2026 · 22 Tahun Bububbb · Forever Us</p>
+
+            <div class="footer-promise" aria-label="Janji kecil dari Dhani">
+                <span class="footer-pill">I Love U Bubub</span>
+                <span class="footer-pill">You make everything better</span>
+                <span class="footer-pill">You are my favorite place</span>
+            </div>
+
             <p class="footer-credit">
                 Made with <span class="heart" aria-label="cinta">❤️</span> by your boyfriend
             </p>
+            <button id="back-to-top" class="footer-top-btn" type="button" aria-label="Kembali ke atas">
+                Kembali ke atas ↑
+            </button>
         </div>
     </footer>
+
+    <!-- Final surprise reveal -->
+    <div id="final-reveal" class="final-reveal" aria-hidden="true">
+        <div class="final-card" role="dialog" aria-modal="true" aria-label="Pesan rahasia romantis">
+            <p class="final-pretitle">For my one and only</p>
+            <h3 class="final-title" id="final-title">I Love You, Mutiah</h3>
+            <p class="final-text">Terima kasih sudah hadir, bertahan, dan jadi alasan banyak bahagia Dhani. Semoga tahun
+                ini
+                semua doa baik Ayang dikabulkan, dan semoga Dhani selalu menjadi rumah paling nyaman buat Ayang.</p>
+            <button id="close-reveal" type="button" class="close-reveal">Peluk Virtual ♥</button>
+        </div>
+    </div>
 
 
     <!-- JavaScript -->

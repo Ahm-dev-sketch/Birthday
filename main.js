@@ -7,6 +7,57 @@
 'use strict';
 
 /* ----------------------------------------------------------
+   PERFORMANCE PROFILE — Adaptive untuk mobile/iOS/low-end
+   ---------------------------------------------------------- */
+const getPerformanceProfile = () => {
+    const ua = navigator.userAgent || '';
+    const isIOS = /iPad|iPhone|iPod/.test(ua)
+        || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isMobile = window.matchMedia('(max-width: 820px)').matches || navigator.maxTouchPoints > 1;
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const memory = navigator.deviceMemory || 4;
+    const cores = navigator.hardwareConcurrency || 4;
+    const lowEnd = memory <= 4 || cores <= 4;
+
+    if (prefersReduced || (isIOS && lowEnd)) {
+        return {
+            name: 'minimal',
+            confettiCount: 36,
+            confettiFrameStep: 3,
+            sparkleCount: 10,
+            petalCount: 5,
+            enableCursorHearts: false,
+            keepBalloonRespawn: false
+        };
+    }
+
+    if (isMobile || lowEnd || isIOS) {
+        return {
+            name: 'reduced',
+            confettiCount: 72,
+            confettiFrameStep: 2,
+            sparkleCount: 20,
+            petalCount: 9,
+            enableCursorHearts: false,
+            keepBalloonRespawn: true
+        };
+    }
+
+    return {
+        name: 'full',
+        confettiCount: 140,
+        confettiFrameStep: 1,
+        sparkleCount: 36,
+        petalCount: 16,
+        enableCursorHearts: true,
+        keepBalloonRespawn: true
+    };
+};
+
+const PERF = getPerformanceProfile();
+
+/* ----------------------------------------------------------
    UTILITAS — Hitung umur dari tanggal lahir
    ---------------------------------------------------------- */
 const BIRTH_DATE = new Date(2004, 3, 6); // April 6, 2004
@@ -39,6 +90,213 @@ const calcHours = () => calcDays() * 24;
 const renderAge = () => {
     const ageEl = document.getElementById('hero-age');
     if (ageEl) ageEl.textContent = calcAge();
+};
+
+/* ----------------------------------------------------------
+   HERO FX — Sparkles + Rose Petals
+   ---------------------------------------------------------- */
+const initHeroLayers = () => {
+    const sparkleLayer = document.getElementById('sparkle-layer');
+    const petalLayer = document.getElementById('petal-layer');
+    if (!sparkleLayer || !petalLayer) return;
+
+    for (let i = 0; i < PERF.sparkleCount; i++) {
+        const s = document.createElement('span');
+        s.className = 'sparkle';
+        s.style.left = `${Math.random() * 100}%`;
+        s.style.top = `${Math.random() * 100}%`;
+        s.style.setProperty('--twinkle-dur', `${(Math.random() * 1.8 + 1.4).toFixed(2)}s`);
+        s.style.setProperty('--twinkle-delay', `${(Math.random() * 2.5).toFixed(2)}s`);
+        s.style.transform = `scale(${(Math.random() * 0.85 + 0.55).toFixed(2)})`;
+        sparkleLayer.appendChild(s);
+    }
+
+    for (let i = 0; i < PERF.petalCount; i++) {
+        const p = document.createElement('span');
+        p.className = 'petal';
+        p.style.left = `${Math.random() * 100}%`;
+        p.style.setProperty('--fall-dur', `${(Math.random() * 6 + 8).toFixed(2)}s`);
+        p.style.setProperty('--fall-delay', `${(Math.random() * 7).toFixed(2)}s`);
+        p.style.setProperty('--drift', `${Math.floor(Math.random() * 50) - 25}px`);
+        p.style.opacity = `${(Math.random() * 0.35 + 0.45).toFixed(2)}`;
+        petalLayer.appendChild(p);
+    }
+};
+
+/* ----------------------------------------------------------
+   TYPING LOVE MESSAGE
+   ---------------------------------------------------------- */
+const initTypingMessage = () => {
+    const typingEl = document.getElementById('typing-note');
+    const input = document.getElementById('name-input');
+    if (!typingEl) return;
+
+    const defaultName = input?.placeholder?.trim() || 'Sayang';
+    const receiver = input?.value?.trim() || defaultName;
+    const message = `Di umur ${receiver} ke-22 ini, semoga Mutiah selalu merasa dicintai, dihargai, dan ditemani. Hari ini tentang Mutiah, besok juga tetap tentang kebahagiaan Mutiah pastinya.`;
+    let index = 0;
+
+    const type = () => {
+        if (index > message.length) {
+            typingEl.classList.add('done');
+            return;
+        }
+        typingEl.textContent = message.slice(0, index);
+        index += 1;
+        setTimeout(type, 22 + Math.random() * 34);
+    };
+
+    setTimeout(type, 650);
+};
+
+/* ----------------------------------------------------------
+   MEMORY SLIDESHOW
+   ---------------------------------------------------------- */
+const initMemorySlideshow = () => {
+    const slides = Array.from(document.querySelectorAll('.memory-slide'));
+    const dots = Array.from(document.querySelectorAll('.memory-dot'));
+    const visuals = Array.from(document.querySelectorAll('.memory-visual'));
+    if (!slides.length || !dots.length) return;
+
+    const tryLoadImage = (src) => new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(src);
+        img.onerror = () => resolve(null);
+        img.src = src;
+    });
+
+    const resolvePhotoSource = async (src) => {
+        if (!src) return null;
+
+        const direct = await tryLoadImage(src);
+        if (direct) return direct;
+
+        const base = src.replace(/\.[^.]+$/, '');
+        const candidates = ['.jpg', '.jpeg', '.png', '.webp', '.avif'];
+
+        for (const ext of candidates) {
+            const candidate = `${base}${ext}`;
+            const loaded = await tryLoadImage(candidate);
+            if (loaded) return loaded;
+        }
+
+        return null;
+    };
+
+    const applyPhotos = () => {
+        visuals.forEach((visual) => {
+            const src = visual.dataset.photo;
+            if (!src) return;
+
+            resolvePhotoSource(src).then((resolvedSrc) => {
+                if (!resolvedSrc) return;
+                visual.style.backgroundImage = `linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(125, 43, 74, 0.18)), url(${resolvedSrc})`;
+                visual.style.backgroundSize = 'cover';
+                visual.style.backgroundPosition = 'center';
+                visual.style.backgroundRepeat = 'no-repeat';
+            });
+        });
+    };
+
+    let current = 0;
+    let timer = null;
+
+    const showSlide = (idx) => {
+        current = (idx + slides.length) % slides.length;
+        slides.forEach((slide, i) => {
+            slide.classList.toggle('active', i === current);
+            slide.setAttribute('aria-hidden', i === current ? 'false' : 'true');
+        });
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === current);
+            dot.setAttribute('aria-selected', i === current ? 'true' : 'false');
+        });
+    };
+
+    const startAuto = () => {
+        if (timer) clearInterval(timer);
+        timer = setInterval(() => showSlide(current + 1), 4200);
+    };
+
+    dots.forEach((dot, i) => {
+        dot.addEventListener('click', () => {
+            showSlide(i);
+            startAuto();
+        });
+    });
+
+    showSlide(0);
+    startAuto();
+    applyPhotos();
+};
+
+/* ----------------------------------------------------------
+   CURSOR HEART TRAIL
+   ---------------------------------------------------------- */
+const initCursorHearts = () => {
+    if (!PERF.enableCursorHearts) return;
+
+    let last = 0;
+
+    const spawnHeart = (x, y) => {
+        const heart = document.createElement('span');
+        heart.className = 'cursor-heart';
+        heart.textContent = Math.random() > 0.5 ? '❤' : '♡';
+        heart.style.left = `${x}px`;
+        heart.style.top = `${y}px`;
+        heart.style.color = Math.random() > 0.5 ? '#E8437A' : '#FF85A1';
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 820);
+    };
+
+    window.addEventListener('pointermove', (event) => {
+        const now = performance.now();
+        if (now - last < 90) return;
+        last = now;
+        spawnHeart(event.clientX, event.clientY);
+    });
+};
+
+/* ----------------------------------------------------------
+   FINAL SURPRISE REVEAL
+   ---------------------------------------------------------- */
+const initFinalReveal = () => {
+    const reveal = document.getElementById('final-reveal');
+    const openBtn = document.getElementById('open-reveal');
+    const closeBtn = document.getElementById('close-reveal');
+    const finalTitle = document.getElementById('final-title');
+    const input = document.getElementById('name-input');
+    if (!reveal || !closeBtn || !finalTitle) return;
+
+    const resolveName = () => {
+        const typed = input?.value?.trim();
+        const fallback = input?.placeholder?.trim() || 'Mutiah';
+        return typed || fallback;
+    };
+
+    const openReveal = () => {
+        finalTitle.textContent = `I Love You, ${resolveName()}`;
+        reveal.classList.add('show');
+        reveal.setAttribute('aria-hidden', 'false');
+    };
+
+    if (openBtn) {
+        openBtn.addEventListener('click', openReveal);
+    }
+
+    setTimeout(() => {
+        if (!reveal.classList.contains('show')) openReveal();
+    }, 18000);
+
+    const closeReveal = () => {
+        reveal.classList.remove('show');
+        reveal.setAttribute('aria-hidden', 'true');
+    };
+
+    closeBtn.addEventListener('click', closeReveal);
+    reveal.addEventListener('click', (e) => {
+        if (e.target === reveal) closeReveal();
+    });
 };
 
 /* ----------------------------------------------------------
@@ -101,10 +359,26 @@ const initConfetti = () => {
         }
     }
 
-    // Minimum 120 partikel
-    const particles = Array.from({ length: 140 }, () => new Particle());
+    const particles = Array.from({ length: PERF.confettiCount }, () => new Particle());
+    let frameCounter = 0;
+    let paused = false;
+
+    document.addEventListener('visibilitychange', () => {
+        paused = document.hidden;
+    });
 
     const loop = () => {
+        if (paused) {
+            requestAnimationFrame(loop);
+            return;
+        }
+
+        frameCounter += 1;
+        if (frameCounter % PERF.confettiFrameStep !== 0) {
+            requestAnimationFrame(loop);
+            return;
+        }
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         particles.forEach(p => { p.update(); p.draw(); });
         requestAnimationFrame(loop);
@@ -464,6 +738,7 @@ const initBalloonPop = () => {
     };
 
     const spawnBalloon = () => {
+        if (!PERF.keepBalloonRespawn) return; // Disable balloon respawn if not allowed
         const newBalloon = document.createElement('div');
         newBalloon.className = 'balloon';
         randomBalloonStyle(newBalloon);
@@ -541,15 +816,35 @@ const initScrollReveal = () => {
 };
 
 /* ----------------------------------------------------------
+   FOOTER ACTIONS — Back to top
+   ---------------------------------------------------------- */
+const initFooterActions = () => {
+    const backBtn = document.getElementById('back-to-top');
+    if (!backBtn) return;
+
+    backBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+};
+
+/* ----------------------------------------------------------
    INIT — Jalankan semua setelah DOM siap
    ---------------------------------------------------------- */
 document.addEventListener('DOMContentLoaded', () => {
+    document.body.classList.add(`perf-${PERF.name}`);
+
     renderAge();
     initConfetti();
+    initHeroLayers();
     initBalloonPop();
     initMessage();
+    initTypingMessage();
     initStats();
+    initMemorySlideshow();
     initWishWall();
     initAudio();
+    initCursorHearts();
+    initFinalReveal();
     initScrollReveal();
+    initFooterActions();
 });
