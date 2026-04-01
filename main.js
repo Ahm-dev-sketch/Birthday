@@ -417,30 +417,41 @@ const initBalloonPop = () => {
         if (!popAudioCtx) {
             popAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
-        if (popAudioCtx.state === 'suspended') popAudioCtx.resume();
 
-        const now = popAudioCtx.currentTime;
-        const osc = popAudioCtx.createOscillator();
-        const gain = popAudioCtx.createGain();
-        const filter = popAudioCtx.createBiquadFilter();
+        const triggerPop = () => {
+            const now = popAudioCtx.currentTime;
+            const osc = popAudioCtx.createOscillator();
+            const gain = popAudioCtx.createGain();
+            const filter = popAudioCtx.createBiquadFilter();
 
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(260, now);
-        osc.frequency.exponentialRampToValueAtTime(90, now + 0.08);
+            // Square + fast pitch drop memberi karakter "pop" yang lebih jelas di speaker mobile.
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(320, now);
+            osc.frequency.exponentialRampToValueAtTime(110, now + 0.07);
 
-        filter.type = 'highpass';
-        filter.frequency.setValueAtTime(180, now);
+            filter.type = 'highpass';
+            filter.frequency.setValueAtTime(220, now);
 
-        gain.gain.setValueAtTime(0.0001, now);
-        gain.gain.linearRampToValueAtTime(0.15, now + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
+            gain.gain.setValueAtTime(0.0001, now);
+            gain.gain.linearRampToValueAtTime(0.28, now + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
 
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(popAudioCtx.destination);
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(popAudioCtx.destination);
 
-        osc.start(now);
-        osc.stop(now + 0.11);
+            osc.start(now);
+            osc.stop(now + 0.1);
+        };
+
+        if (popAudioCtx.state === 'suspended') {
+            popAudioCtx.resume().then(triggerPop).catch(() => {
+                // Jika resume gagal, skip bunyi tanpa mengganggu interaksi UI.
+            });
+            return;
+        }
+
+        triggerPop();
     };
 
     const randomBalloonStyle = (el) => {
