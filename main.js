@@ -622,6 +622,13 @@ const initAudio = () => {
     const btn = document.getElementById('music-btn');
     if (!btn) return;
 
+    const musicSrc = 'music/be-in-my-heart.mp3';
+    const fileAudio = new Audio(musicSrc);
+    fileAudio.loop = true;
+    fileAudio.preload = 'auto';
+    fileAudio.volume = 0.75;
+    let useFileAudio = true;
+
     // Frekuensi not musik
     const notes = {
         C4: 261.63,
@@ -704,22 +711,52 @@ const initAudio = () => {
         activeOscillators.clear();
     };
 
+    const setButtonState = (isPlaying) => {
+        btn.classList.toggle('playing', isPlaying);
+        btn.setAttribute('aria-label', isPlaying ? 'Hentikan musik' : 'Putar musik ulang tahun');
+        btn.querySelector('.music-icon').textContent = isPlaying ? '⏸' : '🎵';
+    };
+
+    fileAudio.addEventListener('error', () => {
+        useFileAudio = false;
+    });
+
+    const startPlayback = async () => {
+        if (useFileAudio) {
+            try {
+                await fileAudio.play();
+                return true;
+            } catch {
+                // Jika file audio gagal diputar, fallback ke WebAudio synth.
+                useFileAudio = false;
+            }
+        }
+
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        scheduleMelody();
+        return true;
+    };
+
+    const stopPlayback = () => {
+        if (useFileAudio) {
+            fileAudio.pause();
+            fileAudio.currentTime = 0;
+        }
+        stopAll();
+    };
+
     btn.addEventListener('click', () => {
         if (!playing) {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-
-            playing = true;
-            btn.classList.add('playing');
-            btn.setAttribute('aria-label', 'Hentikan musik');
-            btn.querySelector('.music-icon').textContent = '⏸';
-            scheduleMelody();
+            startPlayback().then((started) => {
+                if (!started) return;
+                playing = true;
+                setButtonState(true);
+            });
         } else {
             playing = false;
-            stopAll();
-            btn.classList.remove('playing');
-            btn.setAttribute('aria-label', 'Putar musik ulang tahun');
-            btn.querySelector('.music-icon').textContent = '🎵';
+            stopPlayback();
+            setButtonState(false);
         }
     });
 
@@ -851,6 +888,85 @@ const initBalloonPop = () => {
 };
 
 /* ----------------------------------------------------------
+   ROSE BURST — Klik mawar jadi serpihan kelopak
+   ---------------------------------------------------------- */
+const initRoseBurst = () => {
+    const hero = document.getElementById('hero');
+    const container = hero?.querySelector('.roses-container');
+    const roses = container?.querySelectorAll('.rose-float');
+    if (!hero || !container || !roses.length) return;
+
+    const randomRoseStyle = (el) => {
+        el.style.left = `${Math.floor(Math.random() * 90) + 5}%`;
+        el.style.setProperty('--rose-dur', `${Math.floor(Math.random() * 7) + 12}s`);
+        el.style.setProperty('--rose-delay', `${(Math.random() * 1.1).toFixed(2)}s`);
+        el.style.setProperty('--rose-drift', `${Math.floor(Math.random() * 61) - 30}px`);
+    };
+
+    const createRoseElement = () => {
+        const rose = document.createElement('div');
+        rose.className = 'rose-float';
+        rose.innerHTML = '<span class="rose-bloom"><span class="rose-core"></span></span><span class="rose-stem"></span>';
+        randomRoseStyle(rose);
+        return rose;
+    };
+
+    const spawnRose = () => {
+        if (!PERF.keepBalloonRespawn) return;
+        const rose = createRoseElement();
+        container.appendChild(rose);
+        bindBurst(rose);
+    };
+
+    const makePetalBurst = (x, y) => {
+        const burst = document.createElement('div');
+        burst.className = 'balloon-burst';
+        burst.style.left = `${x}px`;
+        burst.style.top = `${y}px`;
+
+        for (let i = 0; i < 14; i++) {
+            const frag = document.createElement('span');
+            const angle = (Math.PI * 2 * i) / 14 + (Math.random() - 0.5) * 0.4;
+            const dist = 18 + Math.random() * 26;
+            const dx = Math.cos(angle) * dist;
+            const dy = Math.sin(angle) * dist;
+
+            frag.className = 'rose-petal-fragment';
+            frag.style.setProperty('--dx', `${dx}px`);
+            frag.style.setProperty('--dy', `${dy}px`);
+            frag.style.setProperty('--rot', `${(Math.random() - 0.5) * 300}deg`);
+            frag.style.animationDelay = `${Math.random() * 0.08}s`;
+            burst.appendChild(frag);
+        }
+
+        hero.appendChild(burst);
+        setTimeout(() => burst.remove(), 760);
+    };
+
+    const bindBurst = (rose) => {
+        rose.addEventListener('click', () => {
+            if (rose.classList.contains('popped')) return;
+
+            const rect = rose.getBoundingClientRect();
+            const heroRect = hero.getBoundingClientRect();
+            const centerX = rect.left - heroRect.left + rect.width / 2;
+            const centerY = rect.top - heroRect.top + rect.height / 2;
+
+            rose.classList.add('popped');
+            makePetalBurst(centerX, centerY);
+
+            setTimeout(() => {
+                rose.remove();
+            }, 220);
+
+            setTimeout(spawnRose, 650 + Math.random() * 900);
+        });
+    };
+
+    roses.forEach(bindBurst);
+};
+
+/* ----------------------------------------------------------
    SCROLL REVEAL — IntersectionObserver untuk semua section
    ---------------------------------------------------------- */
 const initScrollReveal = () => {
@@ -889,6 +1005,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initConfetti();
     initHeroLayers();
     initBalloonPop();
+    initRoseBurst();
     initMessage();
     initTypingMessage();
     initStats();
